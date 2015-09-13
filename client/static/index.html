@@ -2,6 +2,7 @@
 <head>
 	<link href='css/materialize.css' rel='stylesheet' />
 	<script src='js/angular.js'/></script>
+	<script src='js/jquery-2.1.4.min.js' /></script>
 	<!--5 add lib file-->
 	<script src='js/angular-route.js'/></script>
 	<script type='text/javascript'>
@@ -28,13 +29,18 @@
 			})
 
 			//2a ng-click add
-			$scope.addCustomer = function () {
-				//add to array
-				//$scope.customers.push($scope.newCustomer);
-				
-				//6 passing object to factory
+			$scope.addCustomer = function () {				
 				console.log('con addCustomer',$scope.newCustomer );
-				customerFactory.addCustomer($scope.newCustomer);
+
+				//6 use factory method, if new customer name is unique
+				if(!customerFactory.checkCustomer($scope.newCustomer.name)){
+					console.log('2');
+					//$('.error').addClass('hide');					
+					//6 passing object to factory
+					customerFactory.addCustomer($scope.newCustomer);
+				} else {
+					$('.error').removeClass('hide');
+				}
 
 				//clear form values by giving it an empty object
 				$scope.newCustomer = {};
@@ -53,8 +59,7 @@
 	    //5b add factory to provide data to controller
 		myApp.factory('customerFactory', function () {
 			//3 factory is a function that returns an object literal
-			var customers = [ 
-				];
+			var customers = [];
 			var factory = {};
 			//3 create getHeros method to a callback 
 			factory.getCustomers = function (callback) {
@@ -69,6 +74,18 @@
 					name: info.name,
 					created: Date.now()
 				})
+			}
+			//6 check array to see if customer name exists
+
+			factory.checkCustomer = function(newCustomerName) {
+				console.log('fac checkCustomer', newCustomerName);
+				for (var i = 0; i < customers.length; i++) {
+					console.log('1');
+					if (customers[i].name == newCustomerName) {
+						return true;
+					}
+				}
+				return false;
 			}
 
 			return factory
